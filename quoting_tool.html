@@ -194,25 +194,24 @@ header {
   padding: 8px 10px; border-radius: 8px;
   border: 1.5px solid var(--cream-dark); cursor: pointer;
   transition: all 0.15s; min-width: 70px; text-align: center;
-  position: relative;
 }
 .spec-option:hover { border-color: var(--navy); }
 .spec-option.selected { border-color: var(--navy); background: #EEF1F7; }
 .spec-option img {
   width: 52px; height: 40px; object-fit: cover;
   border-radius: 4px; background: var(--cream-dark);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-  position: relative; z-index: 1;
-}
-.spec-option:hover img {
-  transform: scale(3.2);
-  transform-origin: top center;
-  z-index: 200;
-  box-shadow: 0 8px 32px rgba(26,39,68,0.35);
-  border-radius: 6px;
 }
 .spec-option-label { font-size: 0.72rem; font-weight: 500; color: var(--text); }
 .spec-option-sub { font-size: 0.65rem; color: var(--text-muted); }
+#spec-zoom-tip {
+  position: fixed; z-index: 9999; pointer-events: none;
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 12px 40px rgba(26,39,68,0.45);
+  border: 2px solid var(--navy);
+  opacity: 0; transition: opacity 0.15s ease;
+}
+#spec-zoom-tip.visible { opacity: 1; }
+#spec-zoom-tip img { width: 240px; height: 180px; object-fit: cover; display: block; }
 
 /* DIMENSION INPUTS */
 .dim-inputs { display: flex; gap: 12px; align-items: flex-end; }
@@ -1362,6 +1361,50 @@ function printQuote() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 renderProductList();
 renderQuote();
+
+// ─── SPEC IMAGE ZOOM TOOLTIP ──────────────────────────────────────────────────
+(function() {
+  const tip = document.createElement('div');
+  tip.id = 'spec-zoom-tip';
+  const tipImg = document.createElement('img');
+  tip.appendChild(tipImg);
+  document.body.appendChild(tip);
+
+  let current = null;
+
+  document.addEventListener('mouseover', function(e) {
+    const opt = e.target.closest('.spec-option');
+    if (!opt || opt === current) return;
+    current = opt;
+
+    const img = opt.querySelector('img');
+    if (!img || !img.src || img.naturalWidth === 0) return;
+
+    tipImg.src = img.src;
+    tip.classList.add('visible');
+    positionTip(opt);
+  });
+
+  document.addEventListener('mouseout', function(e) {
+    const opt = e.target.closest('.spec-option');
+    if (!opt) return;
+    if (opt.contains(e.relatedTarget)) return;
+    current = null;
+    tip.classList.remove('visible');
+  });
+
+  function positionTip(opt) {
+    const rect = opt.getBoundingClientRect();
+    const TW = 244, TH = 184;
+    let left = rect.left + rect.width / 2 - TW / 2;
+    let top  = rect.top - TH - 10;
+    if (top < 8) top = rect.bottom + 10;
+    if (left < 8) left = 8;
+    if (left + TW > window.innerWidth - 8) left = window.innerWidth - 8 - TW;
+    tip.style.left = left + 'px';
+    tip.style.top  = top  + 'px';
+  }
+})();
 </script>
 </body>
 </html>
