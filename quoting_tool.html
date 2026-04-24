@@ -194,12 +194,22 @@ header {
   padding: 8px 10px; border-radius: 8px;
   border: 1.5px solid var(--cream-dark); cursor: pointer;
   transition: all 0.15s; min-width: 70px; text-align: center;
+  position: relative;
 }
 .spec-option:hover { border-color: var(--navy); }
 .spec-option.selected { border-color: var(--navy); background: #EEF1F7; }
 .spec-option img {
   width: 52px; height: 40px; object-fit: cover;
   border-radius: 4px; background: var(--cream-dark);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  position: relative; z-index: 1;
+}
+.spec-option:hover img {
+  transform: scale(3.2);
+  transform-origin: top center;
+  z-index: 200;
+  box-shadow: 0 8px 32px rgba(26,39,68,0.35);
+  border-radius: 6px;
 }
 .spec-option-label { font-size: 0.72rem; font-weight: 500; color: var(--text); }
 .spec-option-sub { font-size: 0.65rem; color: var(--text-muted); }
